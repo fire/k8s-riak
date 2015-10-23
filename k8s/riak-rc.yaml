@@ -1,0 +1,52 @@
+apiVersion: v1
+kind: ReplicationController
+metadata:
+  name: riak-rc
+  labels:
+    app: riak
+spec:
+  replicas: 5
+  selector:
+    app: riak
+    role: node
+  template:
+    metadata:
+      labels:
+        # Important: these labels need to match the selector above
+        app: riak
+        role: node
+    spec:
+      containers:
+      - name: riak
+        image: quay.io/briends/k8s-riak:latest
+        env:
+        - name: RIAK_AUTOMATIC_DISCOVERY
+          value: "false"
+        - name: RIAK_BACKEND
+          value: "bitcask"
+        lifecycle:
+          postStart:
+            exec:
+              # command: ["riak-admin"]
+              # args: ["cluster status && echo 'POSTSTART'"]
+              command:
+                - "riak-admin"
+                - "cluster"
+                - "status"
+          # preStop:
+            # exec:
+              # command: ["riak-admin"]
+              # args: ["cluster status && echo 'PRESTOP'"]
+              # command: ["echo 'PRESTOP'"]
+        ports:
+        - containerPort: 8087
+        - containerPort: 8098
+        volumeMounts:
+        - mountPath: /var/lib/riak
+          name: riak-data
+      volumes:
+      - name: riak-data
+        emptyDir: {}
+        # gcePersistentDisk:
+        #   pdName: riak-data-disk
+        #   fsType: ext4

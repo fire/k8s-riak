@@ -1,0 +1,16 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: riak-discovery
+  namespace: default
+  labels:
+    app: riak
+    role: discovery
+spec:
+  selector:
+    app: riak
+    role: node
+  ports:
+  - name: transport
+    port: 8098
+    protocol: TCP

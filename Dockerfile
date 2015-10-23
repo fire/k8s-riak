@@ -10,6 +10,10 @@ ENV DEBIAN_FRONTEND noninteractive
 ENV RIAK_VERSION 2.0.2-1
 
 RUN \
+    # Prepare stack
+    curl -s https://s3.amazonaws.com/download.fpcomplete.com/ubuntu/fpco.key | sudo apt-key add - && \
+    curl -s https://packagecloud.io/install/repositories/basho/riak/script.deb.sh | bash && \
+    echo 'deb http://download.fpcomplete.com/ubuntu/trusty stable main'|sudo tee /etc/apt/sources.list.d/fpco.list && \
 
     # Install Java 7
     sed -i.bak 's/main$/main universe/' /etc/apt/sources.list && \
@@ -19,8 +23,11 @@ RUN \
     apt-get install -y oracle-java7-installer && \
 
     # Install Riak
-    curl https://packagecloud.io/install/repositories/basho/riak/script.deb.sh | bash && \
     apt-get install -y riak=${RIAK_VERSION} && \
+
+    # Install stack for script
+    apt-get install stack -y && \
+    stack setup && stack install turtle lens lens-aeson wreq envy string-conversions errors && \
 
     # Cleanup
     apt-get clean && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
