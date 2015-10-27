@@ -44,9 +44,16 @@ spec:
         volumeMounts:
         - mountPath: /var/lib/riak
           name: riak-data
+        volumeMounts:
+        - mountPath: /boot-riak
+          name: boot-riak
       volumes:
       - name: riak-data
         emptyDir: {}
+      volumes:
+      - name: boot-riak
+        hostPath:
+          path: /Users/jloos/Workspace/briends/misc/riak-kubernets-bootstrapper
         # gcePersistentDisk:
         #   pdName: riak-data-disk
         #   fsType: ext4
