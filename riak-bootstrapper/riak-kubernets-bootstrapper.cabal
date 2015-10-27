@@ -19,14 +19,15 @@ executable riak-kubernets-bootstrapper
   build-depends:
       base >= 4.7 && < 5
     , aeson
+    , bytestring
+    , connection
     , containers
     , envy
     , errors
+    , http-client-tls
     , lens
     , lens-aeson
     , string-conversions
-    , http-client-tls
-    , connection
+    , text
     , turtle
-    , bytestring
     , wreq
