@@ -26,8 +26,7 @@ RUN \
     apt-get install -y riak=${RIAK_VERSION} && \
 
     # Install stack for script
-    apt-get install stack -y && \
-    stack setup && stack install turtle lens lens-aeson wreq envy string-conversions errors && \
+    apt-get install -y stack && \
 
     # Cleanup
     apt-get clean && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
@@ -35,9 +34,6 @@ RUN \
 # Setup the Riak service
 RUN mkdir -p /etc/service/riak
 ADD bin/riak.sh /etc/service/riak/run
-
-# Setup automatic clustering
-ADD bin/automatic_clustering.sh /etc/my_init.d/99_automatic_clustering.sh
 
 # Tune Riak configuration settings for the container
 RUN sed -i.bak 's/listener.http.internal = 127.0.0.1/listener.http.internal = 0.0.0.0/' /etc/riak/riak.conf && \
