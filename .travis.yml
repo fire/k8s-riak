@@ -16,3 +16,5 @@ install:
 script:
   - shellcheck $(find . -name "*.sh")
   - $STACK --no-terminal --skip-ghc-check test
+
+  
