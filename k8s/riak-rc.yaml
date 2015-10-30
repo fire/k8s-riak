@@ -75,7 +75,7 @@ spec:
       # mounted by vagrant into each node
       - name: home-volume
         hostPath:
-          path: /home/jloos/Workspace/briends/misc/docker-riak/k8s-riak-bootstrapper
+          path: /home/jloos/Workspace/briends/misc/k8s-riak/k8s-riak-bootstrapper
       - name: root-stack
         hostPath:
           path: /home/jloos/.stack/

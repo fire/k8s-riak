@@ -57,7 +57,7 @@ instance FromEnv Environment where
     let localKubernetesEnv = Env.env "KUBERNETES_MASTER" -- E.g.: when running via Vagrant
         liveKubernetesEnv  = (<>) "https://" <$> Env.env "KUBERNETES_PORT_443_TCP_ADDR"
     in Environment
-        <$> (fmap KubernetesApi (liveKubernetesEnv <|> localKubernetesEnv))  -- "https://kubernetes"
+        <$> fmap KubernetesApi (liveKubernetesEnv <|> localKubernetesEnv)
         <*> envMaybe "RIAK_NAMESPACE" Env..!= "default"
         <*> envMaybe "RIAK_DISCOVERY_SERVICE" Env..!= "riak-discovery"
 
