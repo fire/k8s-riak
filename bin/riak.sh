@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 env
 
-IP_ADDRESS=$(ip -o -4 addr list eth0 | awk '{print $4}' | cut -d/ -f1)
+IP_ADDRESS=$(hostname -I)
 
 # Ensure correct ownership and permissions on volumes
 chown riak:riak /var/lib/riak /var/log/riak
