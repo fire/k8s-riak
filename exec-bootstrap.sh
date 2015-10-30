@@ -1,3 +1,5 @@
+#!/usr/bin/env bash
+set -x #echo on
 
 STACK="stack --stack-yaml /home/jloos/stack.yaml"
 
