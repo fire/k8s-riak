@@ -32,8 +32,10 @@ RUN \
     apt-get clean && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
 
 # Setup the Riak service
-RUN mkdir -p /etc/service/riak
 ADD bin/riak.sh /etc/service/riak/run
+
+# Add bootstrapper for auto clustering
+ADD .app/bin/ /usr/sbin/
 
 # Tune Riak configuration settings for the container
 RUN sed -i.bak 's/listener.http.internal = 127.0.0.1/listener.http.internal = 0.0.0.0/' /etc/riak/riak.conf && \
