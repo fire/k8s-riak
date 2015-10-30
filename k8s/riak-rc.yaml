@@ -2,10 +2,11 @@ apiVersion: v1
 kind: ReplicationController
 metadata:
   name: riak-rc
+  namespace: default
   labels:
     app: riak
 spec:
-  replicas: 5
+  replicas: 1
   selector:
     app: riak
     role: node
@@ -24,36 +25,57 @@ spec:
           value: "false"
         - name: RIAK_BACKEND
           value: "bitcask"
-        lifecycle:
-          postStart:
-            exec:
-              # command: ["riak-admin"]
-              # args: ["cluster status && echo 'POSTSTART'"]
-              command:
-                - "riak-admin"
-                - "cluster"
-                - "status"
+        # lifecycle:
+        #   postStart:
+        #     exec:
+        #       command: ["/bin/sh","-c"]
+        #       args: ["env > /dev/termination-log 2>&1"]
           # preStop:
-            # exec:
-              # command: ["riak-admin"]
+          #   exec:
+          #     command:
+          #       - "riak-admin"
+          #       - "cluster"
+          #       - "leave"
               # args: ["cluster status && echo 'PRESTOP'"]
               # command: ["echo 'PRESTOP'"]
         ports:
         - containerPort: 8087
         - containerPort: 8098
         volumeMounts:
+
         - mountPath: /var/lib/riak
           name: riak-data
-        volumeMounts:
-        - mountPath: /boot-riak
-          name: boot-riak
+
+        - mountPath: /var/log/riak
+          name: riak-log
+
+        # -- local project section
+        - name: home-volume
+          mountPath: /home/jloos/
+
+        # - mountPath: /boot-riak
+        #   name: boot-riak
+        #
+        - name: root-stack
+          mountPath: /root/.stack
+
       volumes:
       - name: riak-data
         emptyDir: {}
-      volumes:
-      - name: boot-riak
+      - name: riak-log
+        emptyDir: {}
+
+      # - name: home-volume
+      #   persistentVolumeClaim:
+      #     claimName: home-volume
+      # gcePersistentDisk:
+      #   pdName: riak-data-disk
+      #   fsType: ext4
+
+      # mounted by vagrant into each node
+      - name: home-volume
         hostPath:
-          path: /Users/jloos/Workspace/briends/misc/riak-kubernets-bootstrapper
-        # gcePersistentDisk:
-        #   pdName: riak-data-disk
-        #   fsType: ext4
+          path: /home/jloos/Workspace/briends/misc/docker-riak/k8s-riak-bootstrapper
+      - name: root-stack
+        hostPath:
+          path: /home/jloos/.stack/
