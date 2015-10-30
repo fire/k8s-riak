@@ -1,15 +1,43 @@
 .PHONY: all build riak-container start-cluster test-cluster stop-cluster
 
-all: stop-cluster riak-container start-cluster
+LTS_VERSION = lts-3.10
+REPO = quay.io/briends
+APP = k8s-riak
+VERSION := $(shell cat k8s-riak-bootstrapper/k8s-riak-bootstrapper.cabal | grep '^version:' | grep -oE '[[:digit:]]+.[[:digit:]]+.[[:digit:]]+')
+RIAK_IMG = $(REPO)/$(APP)
+BOOTSTRAPPER_IMG = $(REPO)/$(APP)-bootstrapper
+PROJECT_DIR = $(shell pwd)/k8s-riak-bootstrapper
+LOCAL_STACK = $(shell stack path --global-stack-root)
+STACK_BUILD_VOLUMES = \
+	-v $(shell pwd)/.app/:/root/.local/ \
+	-v $(LOCAL_STACK):/root/.stack/ \
+	-v $(PROJECT_DIR):/usr/src/app/
 
-build riak-container:
-	docker build -t "quay.io/briends/k8s-riak" .
+RUN_STACK_BUILD = docker run --rm -ti $(STACK_BUILD_VOLUMES) -w /usr/src/app/ fpco/stack-build:$(LTS_VERSION)
 
-start-cluster:
-	./bin/start-cluster.sh
+appDir:
+	@mkdir -p ./.app
 
-test-cluster:
-	./bin/test-cluster.sh
+build: appDir
+	$(RUN_STACK_BUILD) stack build --copy-bins
+	docker build -t $(RIAK_IMG):$(VERSION) -t $(RIAK_IMG):latest .
 
-stop-cluster:
-	./bin/stop-cluster.sh
+
+publish:
+	docker push $(RIAK_IMG):$(VERSION)
+	docker push $(RIAK_IMG):latest
+
+#
+# all: stop-cluster riak-container start-cluster
+#
+# build riak-container:
+# 	docker cp `stack `
+#
+# start-cluster:
+# 	./bin/start-cluster.sh
+#
+# test-cluster:
+# 	./bin/test-cluster.sh
+#
+# stop-cluster:
+# 	./bin/stop-cluster.sh
