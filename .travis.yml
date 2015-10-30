@@ -1,5 +1,11 @@
-language: haskell
 sudo: false
+
+language: c
+
+addons:
+  apt:
+    packages:
+    - libgmp-dev
 
 env:
   - STACK="stack --stack-yaml k8s-riak-bootstrapper/stack.yaml"
@@ -10,9 +16,11 @@ before_install:
   - export PATH=~/.local/bin:$PATH
   - travis_retry curl -L https://www.stackage.org/stack/linux-x86_64 | tar xz --wildcards --strip-components=1 -C ~/.local/bin '*/stack'
 install:
-  - ./travis_long cabal install shellcheck
-  - ./travis_long $STACK --no-terminal setup
-  - ./travis_long $STACK --no-terminal --skip-ghc-check test --only-snapshot
+  - $STACK --no-terminal setup
 script:
-  - shellcheck $(find . -name "*.sh")
   - $STACK --no-terminal --skip-ghc-check test
+
+# Caching so the next build will be fast too.
+cache:
+  directories:
+  - $HOME/.stack
