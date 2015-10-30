@@ -1,4 +1,4 @@
 # k8s-riak-bootstrapper
 
-A [Riak](https://github.com/basho/riak) cluster in kubernetes.
-Based on [https://github.com/hectcastro/docker-riak].
+A [basho/riak](https://github.com/basho/riak) cluster in kubernetes,
+based on (hectcastro/docker-riak)[https://github.com/hectcastro/docker-riak].
