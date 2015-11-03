@@ -8,7 +8,6 @@ addons:
     - libgmp-dev
 
 env:
-  - STACK="stack --stack-yaml k8s-riak-bootstrapper/stack.yaml"
 
 before_install:
   # stack
@@ -16,9 +15,9 @@ before_install:
   - export PATH=~/.local/bin:$PATH
   - travis_retry curl -L https://www.stackage.org/stack/linux-x86_64 | tar xz --wildcards --strip-components=1 -C ~/.local/bin '*/stack'
 install:
-  - $STACK --no-terminal setup
+  - stack --no-terminal setup
 script:
-  - $STACK --no-terminal --skip-ghc-check test
+  - stack --no-terminal --skip-ghc-check test
 
 # Caching so the next build will be fast too.
 cache:
