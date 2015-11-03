@@ -12,10 +12,11 @@ spec:
   ports:
   - port: 8087
     targetPort: 8087
-    name: http
+    name: protobuf
     protocol: TCP
+
   - port: 8098
     targetPort: 8098
-    name: protobuf
+    name: http
     protocol: TCP
   type: NodePort

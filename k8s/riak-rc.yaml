@@ -13,7 +13,6 @@ spec:
   template:
     metadata:
       labels:
-        # Important: these labels need to match the selector above
         app: riak
         role: node
     spec:
@@ -39,8 +38,11 @@ spec:
               # args: ["cluster status && echo 'PRESTOP'"]
               # command: ["echo 'PRESTOP'"]
         ports:
+        # protobuf
         - containerPort: 8087
+        # http
         - containerPort: 8098
+
         volumeMounts:
 
         - mountPath: /var/lib/riak
@@ -60,8 +62,10 @@ spec:
           mountPath: /root/.stack
 
       volumes:
+
       - name: riak-data
         emptyDir: {}
+
       - name: riak-log
         emptyDir: {}
 
@@ -76,6 +80,7 @@ spec:
       - name: home-volume
         hostPath:
           path: /home/jloos/Workspace/briends/misc/k8s-riak/k8s-riak-bootstrapper
+
       - name: root-stack
         hostPath:
           path: /home/jloos/.stack/
