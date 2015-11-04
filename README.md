@@ -1,4 +1,4 @@
-# k8s-riak-bootstrapper
+# k8s-riak & k8s-riak-bootstrapper
 
 Be warned: this project is currently not functional and extremly volatile.
 
