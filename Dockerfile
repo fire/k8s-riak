@@ -1,31 +1,39 @@
 # Riak
 #
-# VERSION       1.0.5
+# VERSION       2.0.0
 
-FROM phusion/baseimage:0.9.14
-MAINTAINER Hector Castro hectcastro@gmail.com
+# Stick with version 0.9.15 because riak repo supports only ubuntu LTS 14
+FROM phusion/baseimage:0.9.15
+MAINTAINER Jan-Philip Loos <jloos@maxdaten.io>
+
+ARG BINARY_PATH
 
 # Environmental variables
 ENV DEBIAN_FRONTEND noninteractive
-ENV RIAK_VERSION 2.1.1-1
+ENV RIAK_VERSION 2.1.4-1
+
+RUN apt-get update && apt-get upgrade -y -o Dpkg::Options::="--force-confold" -o Dpkg::Options::="--force-confdef"
 
 RUN \
-    # Prepare stack
-    curl -s https://s3.amazonaws.com/download.fpcomplete.com/ubuntu/fpco.key | sudo apt-key add - && \
-    curl -s https://packagecloud.io/install/repositories/basho/riak/script.deb.sh | bash && \
-    echo 'deb http://download.fpcomplete.com/ubuntu/trusty stable main'|sudo tee /etc/apt/sources.list.d/fpco.list && \
+    # Add stack repo
+    curl -s https://s3.amazonaws.com/download.fpcomplete.com/ubuntu/fpco.key | apt-key add - && \
+    echo 'deb http://download.fpcomplete.com/ubuntu/trusty stable main' | tee /etc/apt/sources.list.d/fpco.list && \
 
     # Install Java 7
-    sed -i.bak 's/main$/main universe/' /etc/apt/sources.list && \
-    apt-get update -qq && apt-get install -y software-properties-common && \
-    apt-add-repository ppa:webupd8team/java -y && apt-get update -qq && \
-    echo oracle-java7-installer shared/accepted-oracle-license-v1-1 select true | /usr/bin/debconf-set-selections && \
-    apt-get install -y oracle-java7-installer && \
+    # sed -i.bak 's/main$/main universe/' /etc/apt/sources.list && \
+    # apt-get update -qq && apt-get install -y software-properties-common && \
+    # apt-add-repository ppa:webupd8team/java -y && apt-get update -qq && \
+    # echo oracle-java7-installer shared/accepted-oracle-license-v1-1 select true | /usr/bin/debconf-set-selections && \
+    # apt-get install -y oracle-java7-installer && \
 
+    # Add Riak repo
+    curl https://packagecloud.io/gpg.key | apt-key add - && \
+    curl -s https://packagecloud.io/install/repositories/basho/riak/script.deb.sh | bash && \
+
+    # apt-get update && \
     # Install Riak
+    # apt-get install -y apt-transport-https && \
     apt-get install -y riak=${RIAK_VERSION} && \
-
-    # Install stack for script
     apt-get install -y stack && \
 
     # Cleanup
@@ -35,7 +43,7 @@ RUN \
 ADD bin/riak.sh /etc/service/riak/run
 
 # Add bootstrapper for auto clustering
-ADD .app/bin/ /usr/sbin/
+ADD ${BINARY_PATH} /usr/sbin/
 
 # Tune Riak configuration settings for the container
 RUN sed -i.bak 's/listener.http.internal = 127.0.0.1/listener.http.internal = 0.0.0.0/' /etc/riak/riak.conf && \
@@ -47,6 +55,7 @@ RUN sed -i.bak 's/listener.http.internal = 127.0.0.1/listener.http.internal = 0.
 
 # Make Riak's data and log directories volumes
 VOLUME /var/lib/riak
+
 VOLUME /var/log/riak
 
 # Open ports for HTTP and Protocol Buffers

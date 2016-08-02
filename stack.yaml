@@ -1,10 +1,12 @@
+resolver: lts-5.18
 flags: {}
+docker:
+  enable: true
 extra-package-dbs: []
 packages:
 - k8s-riak-bootstrapper
 - riak-test-client
 extra-deps:
 - envy-0.3.0.2
-- riak-0.9.0.0
+- riak-0.9.1.1
 - riak-protobuf-0.20.0.0
-resolver: lts-3.11

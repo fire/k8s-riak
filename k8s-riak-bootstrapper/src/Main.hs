@@ -38,7 +38,7 @@ instance FromJSON Endpoint where
 
 
 instance ToJSON Endpoint where
-  toJSON (Endpoint ip name) = JSON.object [ "ip" .= ip, "targetRef" .= ("name" .= name) ]
+  toJSON (Endpoint ip name) = JSON.object [ "ip" .= ip, "targetRef" .= JSON.object ["name" .= name] ]
 
 
 newtype KubernetesApi = KubernetesApi { getUrl :: Text }

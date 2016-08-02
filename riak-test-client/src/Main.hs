@@ -13,7 +13,7 @@ import           Network.Riak.Content
 import           Network.Riak.Types (Bucket(..), Key(..), Quorum(..))
 
 client :: RB.Client
-client = RB.Client "172.17.8.102" "30798" "test"
+client = RB.Client "192.168.99.100" "8087" "test"
 
 testBucket :: B.ByteString
 testBucket = "testBucket"
@@ -27,6 +27,12 @@ testValue = "{something: 'blah'}"
 putSomeData conn bucket key value = do
   putStrLn ("PUT: bucket=" ++ show bucket ++ ", key = " ++ show key ++ ", value = " ++ show value)
   RB.put conn testBucket testKey Nothing (binary testValue) Default Default
+  putStrLn "=========================="
+
+getTestBucket conn = do
+  putStrLn ("GET: bucket=" ++ show testBucket)
+  -- RB.setBucket conn def
+  print =<< RB.getBucket conn testBucket
   putStrLn "=========================="
 
 getSomeData conn bucket key = do
@@ -50,6 +56,7 @@ main = do
   print =<< RB.getServerInfo c
   listBuckets    c
   putSomeData    c testBucket testKey (binary testValue)
+  -- getTestBucket  c
   getSomeData    c testBucket testKey
   listBuckets    c
   deleteSomeData c testBucket testKey
