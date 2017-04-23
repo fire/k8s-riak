@@ -2,39 +2,34 @@
 #
 # VERSION       2.0.0
 
-# Stick with version 0.9.15 because riak repo supports only ubuntu LTS 14
-FROM phusion/baseimage:0.9.15
+FROM phusion/baseimage:0.9.21
 MAINTAINER Jan-Philip Loos <jloos@maxdaten.io>
 
 ARG BINARY_PATH
 
 # Environmental variables
 ENV DEBIAN_FRONTEND noninteractive
-ENV RIAK_VERSION 2.1.4-1
+ENV RIAK_VERSION 2.2.3
 
 RUN apt-get update && apt-get upgrade -y -o Dpkg::Options::="--force-confold" -o Dpkg::Options::="--force-confdef"
 
 RUN \
-    # Add stack repo
-    curl -s https://s3.amazonaws.com/download.fpcomplete.com/ubuntu/fpco.key | apt-key add - && \
-    echo 'deb http://download.fpcomplete.com/ubuntu/trusty stable main' | tee /etc/apt/sources.list.d/fpco.list && \
-
-    # Install Java 7
+    # Install Java 8
     # sed -i.bak 's/main$/main universe/' /etc/apt/sources.list && \
     # apt-get update -qq && apt-get install -y software-properties-common && \
     # apt-add-repository ppa:webupd8team/java -y && apt-get update -qq && \
     # echo oracle-java7-installer shared/accepted-oracle-license-v1-1 select true | /usr/bin/debconf-set-selections && \
-    # apt-get install -y oracle-java7-installer && \
+    # apt-get install -y oracle-java8-installer && \
 
     # Add Riak repo
-    curl https://packagecloud.io/gpg.key | apt-key add - && \
-    curl -s https://packagecloud.io/install/repositories/basho/riak/script.deb.sh | bash && \
+    curl http://apt.basho.com/gpg/basho.apt.key | apt-key add - && \
+    echo deb http://apt.basho.com lsb_release -sc main > /etc/apt/sources.list.d/basho.list \
 
     # apt-get update && \
     # Install Riak
     # apt-get install -y apt-transport-https && \
     apt-get install -y riak=${RIAK_VERSION} && \
-    apt-get install -y stack && \
+    apt-get install -y haskell-stack && \
 
     # Cleanup
     apt-get clean && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
@@ -60,10 +55,6 @@ VOLUME /var/log/riak
 
 # Open ports for HTTP and Protocol Buffers
 EXPOSE 8098 8087
-
-# Enable insecure SSH key
-# See: https://github.com/phusion/baseimage-docker#using_the_insecure_key_for_one_container_only
-RUN /usr/sbin/enable_insecure_key
 
 # Leverage the baseimage-docker init system
 CMD ["/sbin/my_init", "--quiet"]
